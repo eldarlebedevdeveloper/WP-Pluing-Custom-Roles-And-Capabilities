@@ -15,7 +15,7 @@
 //     );
 //     foreach($added_option_fields as $option){
 //         delete_option($option);
-//     }
+//     } 
 // }
 
 add_action('admin_menu', 'crac_options_page');
