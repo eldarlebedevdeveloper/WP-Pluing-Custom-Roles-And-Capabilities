@@ -8,7 +8,7 @@
 
 add_action('admin_menu', 'crac_options_page');
 function crac_options_page(){
-    add_menu_page(
+    add_menu_page( 
         'CRAC General Settings',
         'CRAC', 
         'manage_options',
