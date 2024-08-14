@@ -1,2 +1,2 @@
 # WP-Pluing-Custom-Roles-And-Capabilities
- Create a custom user role by simply adding a new custom role name and specifying the role's capabilities
+CRAC is a plugin for create custom roles and add/update/delete capabilities to existing and custome roles
