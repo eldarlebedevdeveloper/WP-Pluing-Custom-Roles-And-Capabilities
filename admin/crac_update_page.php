@@ -115,23 +115,26 @@ function crac_update_settings_api_init(){
 
 // Functionality for adding capabilities for choised role
 function crac_update_roles_section_html(){
-    $update_role_name = get_option("crac_update_user_roles_name_field");
-    $role = get_role($update_role_name);
+    if(get_option('crac_update_user_roles_name_field')){
+        $update_role_name = get_option("crac_update_user_roles_name_field");
+        $role = get_role($update_role_name);
 
-    $update_checkbox_fields_json = get_option('crac_update_user_roles_checkboxe_fields_array');
-    $update_checkbox_fields = json_decode($update_checkbox_fields_json);
-    
-    foreach($update_checkbox_fields as $checkbox_object){
-        $checkbox = get_option($checkbox_object->checkbox_name);
-        $cap_name = $checkbox_object->cap_name;
+        $update_checkbox_fields_json = get_option('crac_update_user_roles_checkboxe_fields_array');
+        $update_checkbox_fields = json_decode($update_checkbox_fields_json);
+        
+        foreach($update_checkbox_fields as $checkbox_object){
+            $checkbox = get_option($checkbox_object->checkbox_name);
+            $cap_name = $checkbox_object->cap_name;
 
-        $role->remove_cap($cap_name);
+            $role->remove_cap($cap_name);
 
-        if($checkbox == 1){
-            $update_active_checkbox_fields[$cap_name] = $checkbox;
-            $role->add_cap($cap_name);
+            if($checkbox == 1){
+                $update_active_checkbox_fields[$cap_name] = $checkbox;
+                $role->add_cap($cap_name);
+            }
         }
     }
+
 }
 // HTML of role name 
 function crac_update_user_roles_name_field_html($choised_role_array){

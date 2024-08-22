@@ -18,6 +18,7 @@ function crac_delete_options_page_html(){
     }
     ?>
         <div class="wrap">
+            <h1><?php echo get_admin_page_title(); ?></h1>
             <form action="options.php" method="post" id="crac_delete_page_form" name="crac_delete_page_form">
                 <?php 
                     settings_fields('crac_delete_page');
@@ -26,7 +27,6 @@ function crac_delete_options_page_html(){
                 ?>
             </form>
         </div>
-
     <?php
 }
 
@@ -54,33 +54,33 @@ function crac_delete_settings_api_init(){
         );
         register_setting('crac_delete_page', 'crac_delete_role_field_' . $role_name);
     }
-
 }
 
 function crac_delete_roles_section_html(){
     global $user_role_names;
-    $d = '';
+    global $caps_list;
+
     foreach($user_role_names as $role_name => $role_display_name){
         $role_option_name =  'crac_delete_role_field_' . $role_name;
         $role = get_option($role_option_name);
         if($role == 1){
-            $d .= ' ' . $role_name;
             remove_role($role_name);
             delete_option($role_option_name);
+                
+            if($role_name == get_option('crac_update_user_roles_name_field')){
+                update_option('crac_update_user_roles_name_field', array_keys($user_role_names)[0]);
+            }
         }
-
     }
-    update_option('crac_delete_role_field_test', $d);
-
 }
 function crac_delete_role_field_html($array){
     echo '<input
-            type="checkbox"
-            name="'.$array['field_name'].'"
-            id="'.$array['field_name'].'"
-            value="1"
-            '. checked(1, get_option($array['field_name']), false) .'
-        />
-        <label for="'.$array['field_name'].'">'.$array['role_name'].'</label>
+        type="checkbox"
+        name="'.$array['field_name'].'"
+        id="'.$array['field_name'].'"
+        value="1"
+        '. checked(1, get_option($array['field_name']), false) .'
+    />
+    <label for="'.$array['field_name'].'">'.$array['role_name'].'</label>
     ';
 }

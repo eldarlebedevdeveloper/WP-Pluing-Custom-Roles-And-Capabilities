@@ -95,7 +95,6 @@ function crac_general_settings_api_init(){
 function crac_general_create_custom_user_role_capabilities_section_html(){
     echo '<p>Pointing the capabilities</p>';
 }
-
 function crac_general_create_custom_user_role_section_html(){
     echo '<p>Add a name, name ID, and specify capabilities for the new role</p>';
 }

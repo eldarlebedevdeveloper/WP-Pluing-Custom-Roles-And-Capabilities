@@ -3,7 +3,6 @@
 *Plugin Name: CRAC - Custom Roles And Capabilities
 *Version: 1.0.0
 *Description: Create custom roles and add/change/delete capabilities to existing and custome roles
-
 */
 
 // Add styles
@@ -24,11 +23,6 @@ function wpb_hook_javascript_footer() {
             let update_selet_role = document.querySelector('#crac_update_user_roles_select_filed')
             let update_role_name = document.querySelector('#crac_update_user_roles_name_field')
             let update_role_capabilities = document.querySelectorAll('.crac_update_user_roles_checkboxe_fields')
-
-            // window.addEventListener('DOMContentLoaded', function() {
-            //     let event = new Event('change');
-            //     update_selet_role.dispatchEvent(event);
-            // });
 
             update_selet_role.addEventListener('change', function(event){
                update_choise_role(event)
@@ -75,3 +69,43 @@ foreach($administrator_caps as $cap_name => $cap_value){
 include('admin/crac_general_page.php');
 include('admin/crac_update_page.php');
 include('admin/crac_delete_page.php');
+
+
+// Register the uninstall hook
+register_uninstall_hook(__FILE__, 'crac_uninstall_function');
+
+// Define the uninstall function
+function crac_uninstall_function() {
+    global $user_role_names;
+    global $caps_list;
+
+   $added_option_fields = array(
+        'crac_general_add_role_name_field',
+        'crac_general_add_role_name_field2',
+        'crac_general_add_role_slug_field',
+        'crac_general_add_role_slug_field',
+        'crac_update_user_roles_select_filed',
+        'crac_update_user_roles_name_field',
+        'crac_update_user_roles_checkboxe_fields_array',
+    );
+
+    $administrator_caps = get_role( 'administrator' )->capabilities;
+    foreach($administrator_caps as $cap_name => $cap_value){
+        if(str_contains( $cap_name , 'level_') === false){
+            delete_option('crac_general_add_role_capabilities_field_' . $cap_name);
+            delete_option('crac_update_user_roles_checkboxe_fields_' . $cap_name);
+        }
+    }
+
+    $user_roles = wp_roles();
+    $user_role_names = array();
+    foreach(wp_roles()->role_names as $role_slug => $role_name){
+        if($role_slug !== 'administrator'){
+            delete_option('crac_delete_role_field_' . $role_slug);
+        }
+    }
+
+    foreach($added_option_fields as $option){
+        delete_option($option);
+    }
+}

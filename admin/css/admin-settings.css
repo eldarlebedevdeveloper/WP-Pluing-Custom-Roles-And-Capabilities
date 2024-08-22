@@ -1,11 +1,21 @@
-.crac_checkbox_capabilities_container tbody{
+.crac_checkbox_capabilities_container tbody, 
+#crac_update_page_form table tbody,
+#crac_delete_page_form table tbody{
     display: grid;
     grid-template-columns: repeat(4, 1fr);
 }
-.crac_checkbox_capabilities_container th{
+#crac_update_page_form table tbody tr:first-child{
+    position: absolute;
+}
+.crac_checkbox_capabilities_container th,
+#crac_update_page_form table tbody th,
+#crac_delete_page_form table tbody th{
     display: none;
 }
 .crac_show_role_item{
     font-weight: 900;
     margin-right: 10px;
+}
+#crac_update_user_roles_select_filed{
+    margin: 15px 0;
 }
