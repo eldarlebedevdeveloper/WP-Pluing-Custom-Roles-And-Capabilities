@@ -6,121 +6,72 @@
 
 */
 
+// Add styles
+add_action('admin_print_styles', 'add_my_stylesheet');
+function add_my_stylesheet() {
+    wp_enqueue_style( 'myCSS', plugins_url( '/admin/css/admin-settings.css', __FILE__ ) );
+}
 
-// register_deactivation_hook(__FILE__, 'remove_added_option_field_in_db');
-// function remove_added_option_field_in_db(){
-//     $added_option_fields = array(
-//         'crac_general_add_role_name_field',
-//         'crac_general_add_role_name_field2',
-//     );
-//     foreach($added_option_fields as $option){
-//         delete_option($option);
-//     } 
-// }
+add_action('admin_enqueue_scripts', 'add_my_sripts');
+function add_my_sripts()
+{   
+    wp_enqueue_script( 'my_custom_script', plugins_url('/admin/js/admin.js', __FILE__ ), '1.0.0', false );
+}
 
-add_action('admin_menu', 'crac_options_page');
-function crac_options_page(){
-    add_menu_page( 
-        'CRAC General Settings',
-        'CRAC', 
-        'manage_options',
-        'crac_general', 
-        'crac_general_options_page_html', 
-        plugin_dir_url(__FILE__) . 'admin/images/crac.png',
-        20
-    ); 
-}      
-
-function crac_general_options_page_html(){
+function wpb_hook_javascript_footer() {
     ?>
-    <div class="wrap">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        <form action="options.php" method="post">
-            <?php
-                settings_fields('crac_general');
-                do_settings_sections('crac_general');
-                // settings_fields('crac_general_options2');
-                // do_settings_sections('crac_general_options2');
-                submit_button(__('Save Settings', 'textdomain'));
-            ?>
-        </form>
-    </div>
-<?php
+        <script>
+            let update_selet_role = document.querySelector('#crac_update_user_roles_select_filed')
+            let update_role_name = document.querySelector('#crac_update_user_roles_name_field')
+            let update_role_capabilities = document.querySelectorAll('.crac_update_user_roles_checkboxe_fields')
+
+            // window.addEventListener('DOMContentLoaded', function() {
+            //     let event = new Event('change');
+            //     update_selet_role.dispatchEvent(event);
+            // });
+
+            update_selet_role.addEventListener('change', function(event){
+               update_choise_role(event)
+            })
+
+            function update_choise_role(event){
+                let choised_option = update_selet_role.querySelector(`option[value='${event.target.value}']`)
+                let choised_option_data = JSON.parse(choised_option.dataset.role)
+                update_role_name.value = choised_option_data.role_name
+
+                update_role_capabilities.forEach(capabilitie_field => {
+                    capabilitie_field.checked = false
+                })
+
+                for(const avtive_capabilitie in choised_option_data.role_capabilities) {
+                    let field = document.querySelector(`.crac_update_user_roles_checkboxe_fields[data-value="${avtive_capabilitie}"]`)
+                    if(typeof(field) != 'undefined' && field != null){
+                        field.checked = true
+                    }
+                }
+            }
+        </script>
+    <?php
+}
+add_action('admin_footer', 'wpb_hook_javascript_footer');
+
+$user_roles = wp_roles();
+$user_role_names = array();
+foreach(wp_roles()->role_names as $role_slug => $role_name){
+    if($role_slug !== 'administrator'){
+        $user_role_names[$role_slug] = $role_name;
+    }
+}
+
+$administrator_caps = get_role( 'administrator' )->capabilities;
+$caps_list = array();
+foreach($administrator_caps as $cap_name => $cap_value){
+    if(str_contains( $cap_name , 'level_') === false){
+        $caps_list[] = $cap_name;
+    }
 }
 
 
-add_action('admin_init', 'crac_general_settings_api_init');
-function crac_general_settings_api_init(){
-    add_settings_section(
-        'crac_general_create_custom_user_role_section',
-        'Create custom user role', 
-        function() {
-            echo '<p> Create a custom user role by simply adding a new custom role name and specifying the capabilities for the role</p>';
-        }, 
-        'crac_general'
-    );
-    add_settings_field(
-        'crac_general_add_role_name_field',
-        'Add role name',
-        function(){
-            echo '<input 
-                    id="crac_general_add_role_name_field"
-                    name="crac_general_add_role_name_field"
-                    value="' . get_option('crac_general_add_role_name_field', false) . '"
-                    />';
-        }, 
-        'crac_general',
-        'crac_general_create_custom_user_role_section'
-    );
-    register_setting('crac_general', 'crac_general_add_role_name_field');
-
-    add_settings_section(
-        'crac_general_create_custom_user_role_section2',
-        'Create custom user role 2', 
-        function (){
-            echo '<p> Create a custom user role by simply adding a new custom role name and specifying the capabilities for the role</p>';
-        }, 
-        'crac_general'
-    );
-    add_settings_field(
-        'crac_general_add_role_name_field2',
-        'Add role name 2',
-        function (){
-            echo '<input 
-                    id="crac_general_add_role_name_field2"
-                    name="crac_general_add_role_name_field2"
-                    value="' . get_option('crac_general_add_role_name_field2', false) . '"
-                    />';
-        }, 
-        'crac_general',
-        'crac_general_create_custom_user_role_section2'
-    );
-    register_setting('crac_general', 'crac_general_add_role_name_field2');
-}
-
-// function crac_general_create_custom_user_role_section_html(){
-//     echo '<p> Create a custom user role by simply adding a new custom role name and specifying the capabilities for the role</p>';
-// }
-
-// function crac_general_add_role_name_field_html(){
-//     echo '<input 
-//             id="crac_general_add_role_name_field"
-//             name="crac_general_add_role_name_field"
-//             value="' . get_option('crac_general_add_role_name_field', false) . '"
-//             />';
-// }
-
-
-// function crac_general_create_custom_user_role_section_html2(){
-//     echo '<p> Create a custom user role by simply adding a new custom role name and specifying the capabilities for the role</p>';
-// }
-
-// function crac_general_add_role_name_field_html2(){
-//     echo '<input 
-//             id="crac_general_add_role_name_field2"
-//             name="crac_general_add_role_name_field2"
-//             value="' . get_option('crac_general_add_role_name_field2', false) . '"
-//             />';
-// }
-
-
+include('admin/crac_general_page.php');
+include('admin/crac_update_page.php');
+include('admin/crac_delete_page.php');

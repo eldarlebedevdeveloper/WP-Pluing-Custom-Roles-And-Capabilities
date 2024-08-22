@@ -1,0 +1,11 @@
+.crac_checkbox_capabilities_container tbody{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+.crac_checkbox_capabilities_container th{
+    display: none;
+}
+.crac_show_role_item{
+    font-weight: 900;
+    margin-right: 10px;
+}
